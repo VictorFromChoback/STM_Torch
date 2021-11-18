@@ -64,7 +64,6 @@ class STM_Method(torch.optim.Optimizer):
                 param_z = self.z_groups[index_group]['params'][index_param]
                 param_tilde_x = self.xtilde_groups[index_group]['params'][index_param]
 
-                # param_tilde_x.data.copy_(coef_A * param_x.detach()).add_(coef_alpha * param_z.detach())
                 param_tilde_x.data = coef_A * param_x.detach().clone()
                 param_tilde_x.data.add_(coef_alpha * param_z.data)
     
@@ -134,100 +133,8 @@ class STM_Method(torch.optim.Optimizer):
                 param_z = self.z_groups[index_group]['params'][index_param]
                 param_x = self.x_groups[index_group]['params'][index_param]
 
-                # print('tilde ', param)
-                # print('z ', param_z)
-                #   print('x ', param_x)
-
                 param_z.data.add_(-self.alpha * grad_step)
                 param_x.data.mul_(coef_A).add_(coef_alpha * param_z.detach())
 
                 self._recalc_main_param(param, param_z, param_x)
-                
-
-    
-
-    # @torch.no_grad()
-    # def step(self, closure: LossClosure = None) -> StepResult:
-    #     """Performs a single optimization step.
-        
-    #     Arguments:
-    #         closure: A closure that reevaluates the model and returns the loss.
-    #     """
-
-    #     loss = None
-    #     if closure is not None:
-    #         with torch.enable_grad():
-    #             loss = closure()
-    
-    #     # Going throw all groups of params - all coefficient in the network
-    #     # amount of groups > 1 may be useful, if you want to specify learning params for network params
-
-    #     for index_group, group in enumerate(self.param_groups):
-    #         for index_param, param_x in enumerate(group['params']):
-                
-    #             # Optimization state for current params
-
-    #             state = self.state[param_x]
-    #             if len(state) == 0:
-    #                 state['step'] = 0
-
-    #             state['step'] += 1
-
-    #             # Recalc constants
-
-    #             last_A = self.A
-    #             self.alpha, self.A = STM_Method._calculate_next_alpha_A(self.alpha, self.A, self.lip)
-
-    #             coef_A = last_A / self.A
-    #             coef_alpha = self.alpha / self.A
-
-    #             # Find corresponding group and params for other sequences
-                
-    #             param_z = self.z_groups[index_group]['params'][index_param]
-    #             param_tilde_x = self.xtilde_groups[index_group]['params'][index_param]
-
-    #             # print('current ', self.alpha, self.A)
-    #             # print(self.xtilde_groups[index_group]['params'][index_param].requires_grad)
-    #             # print(param_z.requires_grad)
-
-    #             if param_x.grad is None:
-    #                 continue
-                
-    #             grad_step = param_x.grad.detach()
-    #             # grad_step = param_tilde_x.grad.data
-    #             # print(self.alpha, grad_step, self.alpha * grad_step)
-
-    #             # Recalc sequences
-                
-    #             # print('grad ', param_x.grad.data)
-    #             # print(param_tilde_x)
-    #             # print(param_z)
-    #             # print('norm grad ', grad_step)
-
-    #             # self.z_groups[index_group]['params'][index_param] = \
-    #             #    self.z_groups[index_group]['params'][index_param] - self.alpha * grad_step
-
-    #             # print('grad ', grad_step)
-    #             param_z.data.add_(-self.alpha * grad_step.detach())
-    #             # param_x = coef_A * param_x + coef_alpha * param_z   
-    #             # print('here ', param_z.requires_grad)
-
-    #             param_x.mul_(coef_A).add_(coef_alpha * param_z.detach())
-
-    #             # Finally calculate future tilde x for backprop
-    #             # For next step calculations
-
-    #             last_A = self.A
-    #             new_alpha, new_A = STM_Method._calculate_next_alpha_A(self.alpha, self.A, self.lip)
-
-    #             coef_A = last_A / new_A
-    #             coef_alpha = new_alpha / new_A
-
-    #             # self.xtilde_groups[index_group]['params'][index_param] = coef_A * param_x + coef_alpha * param_z
-    #             # self.xtilde_groups[index_group]['params'][index_param].data = coef_A * param_x.data + coef_alpha * param_z.data
-    #             param_tilde_x.data.copy_(coef_A * param_x.detach()).add_(coef_alpha * param_z.detach())
-
-
-    #     return loss
-        
         
