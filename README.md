@@ -8,3 +8,7 @@ Tested it on **MNIST** dataset with CNN
 For more detailed information check jupyter notebook
 
 Implemetation of optimizer you can find in src/algo_stm.py
+
+![alt text](/MNIST_STM.png "This is results of fitting")
+
+This is the results of fitting
